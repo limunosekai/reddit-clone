@@ -5,7 +5,7 @@
     // "모듈 키": 모듈 값 /* 설명: 사용가능 옵션 (설명이 "~ 여부"인 경우 'true', 'false') */
     /* 기본 옵션 */
     // "incremental": true, /* 증분 컴파일 설정 여부 */
-    "target": "es5" /* 사용할 특정 ECMAScript 버전 설정: 'ES3' (기본), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', 혹은 'ESNEXT'. */,
+    "target": "ES2016" /* 사용할 특정 ECMAScript 버전 설정: 'ES3' (기본), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', 혹은 'ESNEXT'. */,
     "module": "commonjs" /* 모듈을 위한 코드 생성 설정: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', 'es2020', or 'ESNext'. */,
     // "lib": [], /* 컴파일에 포함될 라이브러리 파일 목록 */
     // "allowJs": true, /* 자바스크립트 파일 컴파일 허용 여부 */
@@ -25,12 +25,12 @@
     // "downlevelIteration": true, /* 타겟이 'ES5', 'ES3'일 때에도 'for-of', spread 그리고 destructuring 문법 모두 지원 */
     // "isolatedModules": true, /* 각 파일을 분리된 모듈로 트랜스파일 ('ts.transpileModule'과 비슷합니다). */
     /* 엄격한 타입-확인 옵션 */
-    "strict": true /* 모든 엄격한 타입-체킹 옵션 활성화 여부 */,
+    "strict": false /* 모든 엄격한 타입-체킹 옵션 활성화 여부 */,
     // "noImplicitAny": true, /* 'any' 타입으로 구현된 표현식 혹은 정의 에러처리 여부 */
     // "strictNullChecks": true, /* 엄격한 null 확인 여부 */
     // "strictFunctionTypes": true, /* 함수 타입에 대한 엄격한 확인 여부 */
     // "strictBindCallApply": true, /* 함수에 엄격한 'bind', 'call' 그리고 'apply' 메소드 사용 여부 */
-    // "strictPropertyInitialization": true, /* 클래스의 값 초기화에 엄격한 확인 여부 */
+    "strictPropertyInitialization": false /* 클래스의 값 초기화에 엄격한 확인 여부 */,
     // "noImplicitThis": true, /* 'any' 타입으로 구현된 'this' 표현식 에러처리 여부 */
     // "alwaysStrict": true, /* strict mode로 분석하고 모든 소스 파일에 "use strict"를 추가할 지 여부 */
     /* 추가적인 확인 */
