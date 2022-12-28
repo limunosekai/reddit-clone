@@ -12,7 +12,7 @@ import Post from "./Post";
 import User from "./User";
 
 @Entity("subs")
-export class Sub extends BaseEntity {
+export default class Sub extends BaseEntity {
   @Index()
   @Column({ unique: true })
   name: string;
