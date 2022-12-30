@@ -8,7 +8,7 @@ export const AppDataSource = new DataSource({
   username: "postgres",
   password: "password",
   database: "postgres",
-  synchronize: false, // product에서 true
+  synchronize: true, // product에서 true
   logging: false,
   entities: ["src/entities/**/*.ts"],
   migrations: [],

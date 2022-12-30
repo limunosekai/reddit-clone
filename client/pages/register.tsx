@@ -11,18 +11,18 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<any>({});
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const res = axios.post("/auth/register", {
+      const res = await axios.post("/auth/register", {
         email,
         username,
         password,
       });
 
       console.log(res);
-      router.push("/login");
+      // router.push("/login");
     } catch (err: any) {
       console.log("error: ", err);
       setErrors(err?.response?.data || {});

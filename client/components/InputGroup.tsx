@@ -27,7 +27,7 @@ const InputGroup = ({
         className={classnames(
           "w-full transition duration-200 border border-gray-400 rounded",
           {
-            "border-red-500": error,
+            "border-red-500": !!error,
           }
         )}
         placeholder={placeholder}
