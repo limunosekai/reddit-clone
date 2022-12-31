@@ -36,6 +36,7 @@ const Register = () => {
           <h1 className="mb-2 text-lg font-medium">회원가입</h1>
           <form onSubmit={handleSubmit}>
             <InputGroup
+              type="email"
               placeholder="Email"
               value={email}
               setValue={setEmail}
@@ -48,6 +49,7 @@ const Register = () => {
               error={errors.username}
             />
             <InputGroup
+              type="password"
               placeholder="Password"
               value={password}
               setValue={setPassword}

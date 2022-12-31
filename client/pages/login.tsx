@@ -3,9 +3,11 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/router";
 import InputGroup from "../components/InputGroup";
 import axios from "axios";
+import useAuthStore from "../store/auth";
 
 const Login = () => {
   const router = useRouter();
+  const { handleLogin } = useAuthStore();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<any>({});
@@ -24,6 +26,8 @@ const Login = () => {
           withCredentials: true,
         }
       );
+      await handleLogin(res.data?.user);
+      router.push("/");
     } catch (err: any) {
       console.log(err);
       setErrors(err?.response?.data || {});
@@ -43,6 +47,7 @@ const Login = () => {
               error={errors.username}
             />
             <InputGroup
+              type="password"
               placeholder="Password"
               value={password}
               setValue={setPassword}
