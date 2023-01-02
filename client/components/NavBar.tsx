@@ -1,8 +1,16 @@
+import axios from "axios";
 import Link from "next/link";
 import useAuthStore from "../store/auth";
 
 const NavBar = () => {
-  const { authenticated } = useAuthStore();
+  const { authenticated, handleLogout } = useAuthStore();
+
+  const handleClickLogout = () => {
+    axios
+      .post("/auth/logout")
+      .then(() => handleLogout())
+      .catch((err) => console.error(err));
+  };
 
   return (
     <div className="fixed inset-x-0 top-0 z-10 flex items-center justify-between h-16 px-5 bg-white">
@@ -20,7 +28,11 @@ const NavBar = () => {
       </div>
       <div className="flex">
         {authenticated ? (
-          <button className="w-20 p-2 mr-2 text-center text-white bg-gray-400 rounded">
+          <button
+            type="button"
+            onClick={handleClickLogout}
+            className="w-20 p-2 mr-2 text-center text-white bg-gray-400 rounded"
+          >
             로그아웃
           </button>
         ) : (
