@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
 import InputGroup from "../components/InputGroup";
 import axios from "axios";
+import useAuthStore from "../store/auth";
 
 const Register = () => {
   const router = useRouter();
@@ -10,24 +11,28 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<any>({});
+  const { authenticated } = useAuthStore();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("/auth/register", {
+      await axios.post("/auth/register", {
         email,
         username,
         password,
       });
 
-      console.log(res);
       router.push("/login");
     } catch (err: any) {
       console.log("error: ", err);
       setErrors(err?.response?.data || {});
     }
   };
+
+  if (authenticated) {
+    router.push("/", undefined, { shallow: true });
+  }
 
   return (
     <div className="bg-white">

@@ -7,7 +7,7 @@ import useAuthStore from "../store/auth";
 
 const Login = () => {
   const router = useRouter();
-  const { handleLogin } = useAuthStore();
+  const { handleLogin, authenticated } = useAuthStore();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<any>({});
@@ -33,6 +33,10 @@ const Login = () => {
       setErrors(err?.response?.data || {});
     }
   };
+
+  if (authenticated) {
+    router.push("/", undefined, { shallow: true });
+  }
 
   return (
     <div className="bg-white">
