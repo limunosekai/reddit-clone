@@ -17,7 +17,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       {!authRoute && <NavBar />}
-      <div className={authRoute ? "" : "pt-12"}>
+      <div className={authRoute ? "" : "pt-16"}>
         <Component {...pageProps} />
       </div>
     </>

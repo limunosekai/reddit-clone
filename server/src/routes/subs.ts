@@ -74,9 +74,23 @@ const topSubs = async (_, res: Response) => {
   }
 };
 
+const getSub = async (req: Request, res: Response) => {
+  const name = req.params.name;
+  try {
+    const sub = await Sub.findOneByOrFail({ name });
+    return res.json(sub);
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(404)
+      .json({ error: "해당 커뮤니티가 존재하지 않습니다." });
+  }
+};
+
 const router = Router();
 
 router.post("/", userMiddleware, authMiddleware, createSub);
 router.get("/sub/topSubs", topSubs);
+router.get("/:name", userMiddleware, getSub);
 
 export default router;
