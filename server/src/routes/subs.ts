@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import userMiddleware from "../middlewares/user";
 import authMiddleware from "../middlewares/auth";
 import { isEmpty } from "class-validator";
@@ -6,6 +6,10 @@ import { AppDataSource } from "../data-source";
 import Sub from "../entities/Sub";
 import User from "../entities/User";
 import Post from "../entities/Post";
+import multer, { FileFilterCallback } from "multer";
+import { makeId } from "../utils/helpers";
+import path from "path";
+import { unlinkSync } from "fs";
 
 const createSub = async (req: Request, res: Response) => {
   const { name, title, description } = req.body;
@@ -87,10 +91,96 @@ const getSub = async (req: Request, res: Response) => {
   }
 };
 
+const ownSub = async (req: Request, res: Response, next: NextFunction) => {
+  const user: User = res.locals.user;
+  try {
+    const sub = await Sub.findOneOrFail({ where: { name: req.params.name } });
+    if (sub.username !== user.username) {
+      return res.status(404).json({ error: "소유자만 업로드 가능합니다." });
+    }
+    res.locals.sub = sub;
+    next();
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "업로드 실패 !" });
+  }
+};
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: "public/images",
+    filename: (_, file, callback) => {
+      const name = makeId(10);
+      callback(null, name + path.extname(file.originalname));
+    },
+  }),
+  fileFilter: (_, file: any, callback: FileFilterCallback) => {
+    if (
+      file.mimetype === "image/jpeg" ||
+      file.mimetype === "image/jpg" ||
+      file.mimetype === "image/png"
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error("이미지가 아닙니다."));
+    }
+  },
+});
+
+const uploadSubImage = async (req: Request, res: Response) => {
+  const sub: Sub = res.locals.sub;
+  try {
+    const type = req.body.type;
+    if (type !== "profile" && type !== "banner") {
+      if (!req.file?.path) {
+        return res.status(400).json({ error: "유효하지 않은 파일" });
+      }
+
+      unlinkSync(req.file.path);
+      return res.status(400).json({ error: "잘못된 유형" });
+    }
+
+    let oldImageUrn: string = "";
+
+    if (type === "profile") {
+      oldImageUrn = sub.imageUrn || "";
+      sub.imageUrn = req.file?.filename || "";
+    } else if (type === "banner") {
+      oldImageUrn = sub.bannerUrn || "";
+      sub.bannerUrn = req.file?.filename || "";
+    }
+
+    await sub.save();
+
+    if (oldImageUrn !== "") {
+      const fullFilename = path.resolve(
+        process.cwd(),
+        "public",
+        "images",
+        oldImageUrn
+      );
+      unlinkSync(fullFilename);
+    }
+
+    return res.json(sub);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "문제가 발생했습니다." });
+  }
+};
+
 const router = Router();
 
 router.post("/", userMiddleware, authMiddleware, createSub);
 router.get("/sub/topSubs", topSubs);
 router.get("/:name", userMiddleware, getSub);
+router.post(
+  "/:name/upload",
+  userMiddleware,
+  authMiddleware,
+  ownSub,
+  upload.single("file"),
+  uploadSubImage
+);
 
 export default router;

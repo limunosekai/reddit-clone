@@ -25,6 +25,7 @@ dotenv.config();
 app.get("/", (_, res) => res.send("running"));
 app.use("/api/auth", authRoutes);
 app.use("/api/subs", subRoutes);
+app.use(express.static("public"));
 app.listen(process.env.PORT, async () => {
   console.log(`Server running on port ${process.env.PORT}`);
   AppDataSource.initialize()
