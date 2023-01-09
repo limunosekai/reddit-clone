@@ -8,22 +8,10 @@ import SideBar from "../../components/SideBar";
 import useAuthStore from "../../store/auth";
 import { Sub } from "../../types";
 
-const fetcher = async (url: string) => {
-  try {
-    const res = await axios.get(url);
-    return res.data;
-  } catch (err: any) {
-    throw err?.response?.data;
-  }
-};
-
 const SubPage = () => {
   const router = useRouter();
   const subName = router?.query?.sub;
-  const { data: sub, error } = useSWR<Sub>(
-    subName ? `/subs/${subName}` : null,
-    fetcher
-  );
+  const { data: sub, error } = useSWR<Sub>(subName ? `/subs/${subName}` : null);
   const [ownSub, setOwnSub] = useState(false);
   const { authenticated, user } = useAuthStore();
   const fileInputRef = useRef<HTMLInputElement>(null);

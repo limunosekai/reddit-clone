@@ -4,6 +4,29 @@ import authMiddleware from "../middlewares/auth";
 import Sub from "../entities/Sub";
 import Post from "../entities/Post";
 
+const getPost = async (req: Request, res: Response) => {
+  const { identifier, slug } = req.params;
+
+  try {
+    const post = await Post.findOneOrFail({
+      where: {
+        identifier,
+        slug,
+      },
+      relations: ["sub", "votes"],
+    });
+
+    if (res.locals.user) {
+      post.setUserVote(res.locals.user);
+    }
+
+    return res.json(post);
+  } catch (err) {
+    console.error(err);
+    return res.status(404).json({ error: "게시물을 찾을 수 없습니다." });
+  }
+};
+
 const createPost = async (req: Request, res: Response) => {
   const { title, body, sub } = req.body;
   if (title.trim() === "") {
@@ -30,6 +53,7 @@ const createPost = async (req: Request, res: Response) => {
 };
 
 const router = Router();
+router.get("/:identifier/:slug", userMiddleware, getPost);
 router.post("/", userMiddleware, authMiddleware, createPost);
 
 export default router;
