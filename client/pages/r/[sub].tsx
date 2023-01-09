@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { type } from "os";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import useSWR from "swr";
+import SideBar from "../../components/SideBar";
 import useAuthStore from "../../store/auth";
 import { Sub } from "../../types";
 
@@ -122,7 +123,10 @@ const SubPage = () => {
               </div>
             </div>
           </div>
-          <div className="flex max-w-5xl px-4 pt-5 mx-auto"></div>
+          <div className="flex max-w-5xl px-4 pt-5 mx-auto">
+            <div className="w-full md:mr-3 md:w-8/12"></div>
+            <SideBar sub={sub} />
+          </div>
         </>
       )}
     </>
