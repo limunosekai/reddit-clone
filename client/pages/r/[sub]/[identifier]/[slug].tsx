@@ -36,6 +36,30 @@ const PostPage = () => {
     }
   };
 
+  const vote = async (value: number, comment?: Comment) => {
+    if (!authenticated) {
+      router.push("/login");
+    }
+
+    if (
+      (!comment && value === post?.userVote) ||
+      (comment && comment.userVote === value)
+    ) {
+      value = 0;
+    }
+
+    try {
+      await axios.post("/votes", {
+        identifier,
+        slug,
+        commentIdentifier: comment?.identifier,
+        value,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="flex max-w-5xl px-4 pt-5 mx-auto">
       <div className="w-full md:mr-3 md:w-8/12">
@@ -47,7 +71,7 @@ const PostPage = () => {
                   <button
                     type="button"
                     className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:text-red-500"
-                    onClick={() => {}}
+                    onClick={() => vote(1)}
                   >
                     <i
                       className={cn("fas fa-arrow-up", {
@@ -59,7 +83,7 @@ const PostPage = () => {
                   <button
                     type="button"
                     className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:text-blue-500"
-                    onClick={() => {}}
+                    onClick={() => vote(-1)}
                   >
                     <i
                       className={cn("fas fa-arrow-down", {
@@ -148,7 +172,7 @@ const PostPage = () => {
                     <button
                       type="button"
                       className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:text-red-500"
-                      onClick={() => {}}
+                      onClick={() => vote(1, comment)}
                     >
                       <i
                         className={cn("fas fa-arrow-up", {
@@ -160,7 +184,7 @@ const PostPage = () => {
                     <button
                       type="button"
                       className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:text-blue-500"
-                      onClick={() => {}}
+                      onClick={() => vote(-1, comment)}
                     >
                       <i
                         className={cn("fas fa-arrow-down", {
