@@ -1,9 +1,11 @@
-import axios from "axios";
-import Link from "next/link";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import useSWR from "swr";
 import { Post } from "../../../../types";
 import dayjs from "dayjs";
+import useAuthStore from "../../../../store/auth";
+import axios from "axios";
 
 const PostPage = () => {
   const router = useRouter();
@@ -11,6 +13,23 @@ const PostPage = () => {
   const { data: post, error } = useSWR<Post>(
     identifier && slug ? `/posts/${identifier}/${slug}` : null
   );
+  const { authenticated, user } = useAuthStore();
+  const [newComment, setNewComment] = useState("");
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (newComment.trim() === "") {
+      return;
+    }
+    try {
+      await axios.post(`/posts/${post?.identifier}/${post?.slug}/comments`, {
+        body: newComment,
+      });
+      setNewComment("");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="flex max-w-5xl px-4 pt-5 mx-auto">
@@ -37,13 +56,60 @@ const PostPage = () => {
                   <h1 className="my-1 text-xl font-medium">{post.title}</h1>
                   <p className="my-3 text-sm">{post.body}</p>
                   <div className="flex">
-                    <button>
+                    <button type="button">
                       <i className="mr-1 fas fa-comment-alt fa-xs"></i>
                       <span className="font-bold">
                         {post.commentCount ?? 0} Comments
                       </span>
                     </button>
                   </div>
+                </div>
+              </div>
+              <div className="">
+                <div className="pr-6 mb-4">
+                  {authenticated ? (
+                    <div>
+                      <p className="mb-1 text-xs">
+                        <Link
+                          href={`/u/${user?.username}`}
+                          className="font-semibold text-blue-500"
+                        >
+                          {user?.username}
+                        </Link>{" "}
+                        으로 댓글 작성
+                      </p>
+                      <form onSubmit={handleSubmit}>
+                        <textarea
+                          className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-gray-600"
+                          value={newComment}
+                          onChange={(e) => setNewComment(e.target.value)}
+                        />
+                        <div className="flex justify-end">
+                          <button
+                            type="submit"
+                            className="px-3 py-1 text-white bg-gray-400 rounded"
+                            disabled={newComment.trim() === ""}
+                          >
+                            댓글 작성
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between px-2 py-4 border border-gray-200 rounded">
+                      <p className="font-semibold text-gray-400">
+                        댓글 작성을 위해서 로그인 해주세요.
+                      </p>
+                      <div>
+                        <Link
+                          href="/login"
+                          className="px-3 py-1 text-white bg-gray-400 rounded"
+                        >
+                          로그인
+                        </Link>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </>
