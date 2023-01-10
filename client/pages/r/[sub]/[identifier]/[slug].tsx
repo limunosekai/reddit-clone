@@ -2,6 +2,7 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import useSWR from "swr";
+import cn from "classnames";
 import { Comment, Post } from "../../../../types";
 import dayjs from "dayjs";
 import useAuthStore from "../../../../store/auth";
@@ -13,7 +14,7 @@ const PostPage = () => {
   const { data: post, error } = useSWR<Post>(
     identifier && slug ? `/posts/${identifier}/${slug}` : null
   );
-  const { data: comments } = useSWR<Comment[]>(
+  const { data: comments, mutate } = useSWR<Comment[]>(
     identifier && slug ? `/posts/${identifier}/${slug}/comments` : null
   );
   const { authenticated, user } = useAuthStore();
@@ -28,6 +29,7 @@ const PostPage = () => {
       await axios.post(`/posts/${post?.identifier}/${post?.slug}/comments`, {
         body: newComment,
       });
+      mutate();
       setNewComment("");
     } catch (err) {
       console.error(err);
@@ -41,6 +43,31 @@ const PostPage = () => {
           {post && (
             <>
               <div className="flex">
+                <div className="flex-shrink-0 w-10 py-2 text-center rounded">
+                  <button
+                    type="button"
+                    className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:text-red-500"
+                    onClick={() => {}}
+                  >
+                    <i
+                      className={cn("fas fa-arrow-up", {
+                        "text-red-500": post.userVote === 1,
+                      })}
+                    ></i>
+                  </button>
+                  <p className="text-xs font-bold">{post.voteScore}</p>
+                  <button
+                    type="button"
+                    className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:text-blue-500"
+                    onClick={() => {}}
+                  >
+                    <i
+                      className={cn("fas fa-arrow-down", {
+                        "text-blue-500": post.userVote === -1,
+                      })}
+                    ></i>
+                  </button>
+                </div>
                 <div className="py-2 pr-2">
                   <div className="flex items-center">
                     <p className="text-xs text-gray-400">
@@ -117,6 +144,31 @@ const PostPage = () => {
               </div>
               {comments?.map((comment) => (
                 <div className="flex" key={comment.identifier}>
+                  <div className="flex-shrink-0 w-10 py-2 text-center rounded">
+                    <button
+                      type="button"
+                      className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:text-red-500"
+                      onClick={() => {}}
+                    >
+                      <i
+                        className={cn("fas fa-arrow-up", {
+                          "text-red-500": comment.userVote === 1,
+                        })}
+                      ></i>
+                    </button>
+                    <p className="text-xs font-bold">{comment.voteScore}</p>
+                    <button
+                      type="button"
+                      className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:text-blue-500"
+                      onClick={() => {}}
+                    >
+                      <i
+                        className={cn("fas fa-arrow-down", {
+                          "text-blue-500": comment.userVote === -1,
+                        })}
+                      ></i>
+                    </button>
+                  </div>
                   <div className="py-2 pr-2">
                     <p className="mb-1 text-xs  leading-none">
                       <Link
