@@ -4,7 +4,6 @@ import User from "../entities/User";
 export default async (_, res: Response, next: NextFunction) => {
   try {
     const user: User | undefined = res.locals.user;
-    console.log("authMiddleware", user);
     if (!user) {
       throw new Error("Unauthenticated");
     }

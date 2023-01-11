@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import useSWR from "swr";
 import cn from "classnames";
+import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { Comment, Post } from "../../../../types";
 import dayjs from "dayjs";
 import useAuthStore from "../../../../store/auth";
@@ -11,10 +12,12 @@ import axios from "axios";
 const PostPage = () => {
   const router = useRouter();
   const { identifier, sub, slug } = router.query;
-  const { data: post, error } = useSWR<Post>(
-    identifier && slug ? `/posts/${identifier}/${slug}` : null
-  );
-  const { data: comments, mutate } = useSWR<Comment[]>(
+  const {
+    data: post,
+    error,
+    mutate: postMutate,
+  } = useSWR<Post>(identifier && slug ? `/posts/${identifier}/${slug}` : null);
+  const { data: comments, mutate: commentMutate } = useSWR<Comment[]>(
     identifier && slug ? `/posts/${identifier}/${slug}/comments` : null
   );
   const { authenticated, user } = useAuthStore();
@@ -29,7 +32,7 @@ const PostPage = () => {
       await axios.post(`/posts/${post?.identifier}/${post?.slug}/comments`, {
         body: newComment,
       });
-      mutate();
+      commentMutate();
       setNewComment("");
     } catch (err) {
       console.error(err);
@@ -55,6 +58,8 @@ const PostPage = () => {
         commentIdentifier: comment?.identifier,
         value,
       });
+      postMutate();
+      commentMutate();
     } catch (err) {
       console.error(err);
     }
@@ -73,11 +78,11 @@ const PostPage = () => {
                     className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:text-red-500"
                     onClick={() => vote(1)}
                   >
-                    <i
-                      className={cn("fas fa-arrow-up", {
+                    <FaArrowUp
+                      className={cn("mx-auto", {
                         "text-red-500": post.userVote === 1,
                       })}
-                    ></i>
+                    ></FaArrowUp>
                   </button>
                   <p className="text-xs font-bold">{post.voteScore}</p>
                   <button
@@ -85,11 +90,11 @@ const PostPage = () => {
                     className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:text-blue-500"
                     onClick={() => vote(-1)}
                   >
-                    <i
-                      className={cn("fas fa-arrow-down", {
+                    <FaArrowDown
+                      className={cn("mx-auto", {
                         "text-blue-500": post.userVote === -1,
                       })}
-                    ></i>
+                    ></FaArrowDown>
                   </button>
                 </div>
                 <div className="py-2 pr-2">
@@ -174,11 +179,11 @@ const PostPage = () => {
                       className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:text-red-500"
                       onClick={() => vote(1, comment)}
                     >
-                      <i
-                        className={cn("fas fa-arrow-up", {
+                      <FaArrowUp
+                        className={cn("mx-auto", {
                           "text-red-500": comment.userVote === 1,
                         })}
-                      ></i>
+                      ></FaArrowUp>
                     </button>
                     <p className="text-xs font-bold">{comment.voteScore}</p>
                     <button
@@ -186,11 +191,11 @@ const PostPage = () => {
                       className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:text-blue-500"
                       onClick={() => vote(-1, comment)}
                     >
-                      <i
-                        className={cn("fas fa-arrow-down", {
+                      <FaArrowDown
+                        className={cn("mx-auto", {
                           "text-blue-500": comment.userVote === -1,
                         })}
-                      ></i>
+                      ></FaArrowDown>
                     </button>
                   </div>
                   <div className="py-2 pr-2">
