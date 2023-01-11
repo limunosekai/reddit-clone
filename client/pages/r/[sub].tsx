@@ -11,7 +11,9 @@ import { Post, Sub } from "../../types";
 const SubPage = () => {
   const router = useRouter();
   const subName = router?.query?.sub;
-  const { data: sub, error } = useSWR<Sub>(subName ? `/subs/${subName}` : null);
+  const { data: sub, mutate: subMutate } = useSWR<Sub>(
+    subName ? `/subs/${subName}` : null
+  );
   const [ownSub, setOwnSub] = useState(false);
   const { authenticated, user } = useAuthStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -63,7 +65,7 @@ const SubPage = () => {
     );
   } else {
     renderPosts = sub.posts.map((post: Post) => (
-      <PostCard key={post.identifier} post={post} />
+      <PostCard key={post.identifier} post={post} mutate={subMutate} />
     ));
   }
 
