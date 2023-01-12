@@ -7,7 +7,7 @@ import Comment from "../entities/Comment";
 
 const getPosts = async (req: Request, res: Response) => {
   const currentPage: number = (req.query.page || 0) as number;
-  const perPage: number = (req.query.count || 0) as number;
+  const perPage: number = (req.query.count || 8) as number;
 
   try {
     const posts = await Post.find({

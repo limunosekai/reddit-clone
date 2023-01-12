@@ -3,6 +3,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
 import PostCard from "../components/PostCard";
@@ -32,6 +33,37 @@ const Home: NextPage = () => {
   const posts: Post[] = data ? ([] as Post[]).concat(...data) : [];
   const { data: topSubs } = useSWR<Sub[]>(address);
 
+  const [observedPost, setObservedPost] = useState("");
+
+  useEffect(() => {
+    if (!posts || posts.length === 0) {
+      return;
+    }
+
+    const id = posts[posts.length - 1].identifier;
+    if (id !== observedPost) {
+      setObservedPost(id);
+      observeElement(document.getElementById(id));
+    }
+  }, [posts]);
+
+  const observeElement = (element: HTMLElement | null) => {
+    if (!element) {
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting === true) {
+          console.log("마지막");
+          setPage(page + 1);
+          observer.unobserve(element);
+        }
+      },
+      { threshold: 1 }
+    );
+    observer.observe(element);
+  };
+
   return (
     <>
       <Head>
@@ -46,7 +78,7 @@ const Home: NextPage = () => {
             <p className="text-lg text-center">Loading...</p>
           )}
           {posts?.map((post) => (
-            <PostCard key={post.identifier} post={post} />
+            <PostCard key={post.identifier} post={post} mutate={mutate} />
           ))}
         </div>
         <div className="hidden w-4/12 ml-3 md:block">
