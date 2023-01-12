@@ -10,7 +10,7 @@ import { Post } from "../types";
 
 type Props = {
   post: Post;
-  mutate: () => void;
+  mutate?: () => void;
 };
 
 const PostCard = ({ post, mutate }: Props) => {
@@ -47,7 +47,7 @@ const PostCard = ({ post, mutate }: Props) => {
         slug,
         value,
       });
-      mutate();
+      mutate?.();
     } catch (err) {
       console.error(err);
     }

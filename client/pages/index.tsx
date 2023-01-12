@@ -4,12 +4,32 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import useSWR from "swr";
+import useSWRInfinite from "swr/infinite";
+import PostCard from "../components/PostCard";
 import useAuthStore from "../store/auth";
-import { Sub } from "../types";
+import { Post, Sub } from "../types";
 
 const Home: NextPage = () => {
   const { authenticated } = useAuthStore();
   const address = "http://localhost:4000/api/subs/sub/topSubs";
+
+  const getKey = (pageIndex: number, previousPageData: Post[]) => {
+    if (previousPageData && !previousPageData.length) {
+      return null;
+    }
+    return `/posts?page=${pageIndex}`;
+  };
+
+  const {
+    data,
+    size: page,
+    setSize: setPage,
+    isValidating,
+    error,
+    mutate,
+  } = useSWRInfinite<Post[]>(getKey);
+  const isInitialLoading = !data && !error;
+  const posts: Post[] = data ? ([] as Post[]).concat(...data) : [];
   const { data: topSubs } = useSWR<Sub[]>(address);
 
   return (
@@ -21,7 +41,14 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex max-w-5xl px-4 pt-5 mx-auto">
-        <div className="w-full md:mr-3 md:w-8/12"></div>
+        <div className="w-full md:mr-3 md:w-8/12">
+          {isInitialLoading && (
+            <p className="text-lg text-center">Loading...</p>
+          )}
+          {posts?.map((post) => (
+            <PostCard key={post.identifier} post={post} />
+          ))}
+        </div>
         <div className="hidden w-4/12 ml-3 md:block">
           <div className="bg-white border rounded">
             <div className="p-4 border-b">
