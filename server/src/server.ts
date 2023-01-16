@@ -11,7 +11,8 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
 const app = express();
-const origin = "http://localhost:3000";
+const origin = process.env.APP_URL;
+const port = process.env.PORT;
 
 app.use(
   cors({
@@ -32,8 +33,8 @@ app.use("/api/posts", postRoutes);
 app.use("/api/votes", voteRoutes);
 app.use("/api/users", userRoutes);
 app.use(express.static("public"));
-app.listen(process.env.PORT, async () => {
-  console.log(`Server running on port ${process.env.PORT}`);
+app.listen(port, async () => {
+  console.log(`Server running on ${origin} port ${port}`);
   AppDataSource.initialize()
     .then(async () => {
       console.log("DB initialized...");
